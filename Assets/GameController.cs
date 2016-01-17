@@ -26,6 +26,21 @@ public class GameController : MonoBehaviour {
 	Text endTurn;
 	[SerializeField]
 	Button endTurnButton;
+	[SerializeField]
+	Button continueButton;
+	[SerializeField]
+	Button resetButton;
+
+	[SerializeField]
+	GameObject closeInstructionsBtn;
+	[SerializeField]
+	GameObject instructions;
+
+	[SerializeField]
+	Text roundCounter;
+	[SerializeField]
+	GameObject roundCounterBG;
+
 
 	List<string> pcMoves;
 	List<string> playerMoves;
@@ -38,14 +53,19 @@ public class GameController : MonoBehaviour {
 		isGameOver = false;
 		isContinue = false;
 		points = 0;
-		Debug.Log("Game Start!");
 		game = new Dictionary<int, Combination>();
 		numberOfTones = 1;
-		Debug.Log("Game Start 2!");
-		StartCoroutine(Controller());
+		continueButton.gameObject.SetActive(false);
+		resetButton.gameObject.SetActive(false);
 	}
 
 	IEnumerator Controller(){
+		roundCounter.gameObject.SetActive(true);
+		roundCounterBG.SetActive(true);
+		roundCounter.text = "Ready? "+Environment.NewLine+"Number of Tones = "+numberOfTones+""+Environment.NewLine+"Start!";
+		yield return new WaitForSeconds(5f);
+		roundCounter.gameObject.SetActive(false);
+		roundCounterBG.SetActive(false);
 		Debug.Log(numberOfTones.ToString());
 		if(isPCTurn){
 			PlayerController.Instance.DisableButtons();
@@ -81,6 +101,12 @@ public class GameController : MonoBehaviour {
 	
 	}
 
+	public void CloseInstructions(){
+		instructions.SetActive(false);
+		closeInstructionsBtn.SetActive(false);
+		StartCoroutine(Controller());
+	}
+
 	public void EndTurn(){
 		isPCTurn = true;
 		isUserTurn = false;
@@ -93,9 +119,26 @@ public class GameController : MonoBehaviour {
 		}else{
 			endTurnButton.enabled = false;
 			endTurn.text = "Game Over";
-			pointsIndicator.text = "Points <color=yellow>"+points+"</color><color=red>GAME OVER</color>";
+			pointsIndicator.text = "Points <color=yellow>"+points+"</color>";
+			roundCounter.gameObject.SetActive(true);
+			roundCounterBG.SetActive(true);
+			continueButton.gameObject.SetActive(true);
+			resetButton.gameObject.SetActive(true);
+			roundCounter.text = "<color=red>GAME OVER</color>"+Environment.NewLine+"Total Points = "+points;
 		}
+	}
 
+	public void StartAgain(){
+		roundCounter.gameObject.SetActive(false);
+		roundCounterBG.SetActive(false);
+		continueButton.gameObject.SetActive(false);
+		resetButton.gameObject.SetActive(false);
+		numberOfTones = 1;
+		StartCoroutine(Controller());
+    }
+
+	public void BackToTitle(){
+		Application.LoadLevel("Intro");
 	}
 
 	IEnumerator WaitForNextTurn(Action next){
