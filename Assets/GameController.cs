@@ -125,10 +125,20 @@ public class GameController : MonoBehaviour {
 			continueButton.gameObject.SetActive(true);
 			resetButton.gameObject.SetActive(true);
 			roundCounter.text = "<color=red>GAME OVER</color>"+Environment.NewLine+"Total Points = "+points;
+			var hiScore = 0;
+			if(PlayerPrefs.HasKey("hiscore")){
+				hiScore = PlayerPrefs.GetInt("hiscore");
+			}
+			if(points > hiScore){
+				PlayerPrefs.SetInt("hiscore", points);
+				roundCounter.text = roundCounter.text + Environment.NewLine + "<color=magenta> You have set a new personal record!</color>";
+			}
 		}
 	}
 
 	public void StartAgain(){
+		endTurnButton.enabled = true;
+		endTurn.text = "End Turn";
 		roundCounter.gameObject.SetActive(false);
 		roundCounterBG.SetActive(false);
 		continueButton.gameObject.SetActive(false);
